@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>回声走廊 · 校园悬疑互动叙事</title>
+<style>
+  :root{
+    --ink:#e8e2d6;
+    --dim:#9c9488;
+    --amber:#c9a227;
+    --amber-soft:#e2c766;
+    --bg:#100e0c;
+    --panel:#17140f;
+    --line:rgba(201,162,39,.22);
+  }
+  *{box-sizing:border-box;}
+  /* Twine 故事数据块只作为存档存在，不参与页面显示 */
+  tw-storydata, tw-passagedata, tw-storydata style, tw-storydata script{display:none !important;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
+  body{
+    font-family:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC","SimSun",serif;
+    line-height:1.95;
+    font-size:17px;
+    min-height:100vh;
+    background:
+      radial-gradient(1100px 620px at 50% -10%, rgba(201,162,39,.10), transparent 70%),
+      radial-gradient(900px 700px at 85% 110%, rgba(120,60,40,.10), transparent 70%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:9;
+    background:radial-gradient(circle at 50% 45%, transparent 55%, rgba(0,0,0,.55) 100%);
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:26px 22px 70px;position:relative;z-index:2;}
+
+  /* 顶部状态栏 */
+  .hud{
+    position:sticky;top:0;z-index:5;
+    display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;
+    padding:10px 0 12px;margin-bottom:8px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(to bottom, rgba(16,14,12,.97) 65%, rgba(16,14,12,0));
+    font-size:13px;letter-spacing:.04em;color:var(--dim);
+  }
+  .hud .stat b{color:var(--ink);font-weight:400;}
+  .hud .stat.hide{display:none;}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .chip{
+    border:1px solid rgba(201,162,39,.45);color:var(--amber-soft);
+    padding:1px 8px;border-radius:2px;font-size:12px;white-space:nowrap;
+  }
+  .hud .grow{flex:1;}
+  .ghost{
+    background:none;border:1px solid rgba(232,226,214,.28);color:var(--dim);
+    font-family:inherit;font-size:12px;padding:3px 10px;border-radius:2px;cursor:pointer;
+    letter-spacing:.06em;
+  }
+  .ghost:hover{color:var(--ink);border-color:rgba(232,226,214,.55);}
+
+  .chapter{
+    color:var(--amber);font-size:12px;letter-spacing:.28em;margin:26px 0 10px;
+    opacity:.85;
+  }
+  .prose p{margin:0 0 1.05em;text-align:justify;}
+  .prose p:last-child{margin-bottom:0;}
+  .fade{animation:fadein .5s ease both;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  .choices{margin-top:30px;display:flex;flex-direction:column;gap:12px;}
+  .opt{
+    display:block;width:100%;text-align:left;
+    font-family:inherit;font-size:16px;line-height:1.75;
+    color:var(--ink);
+    background:linear-gradient(to right, rgba(201,162,39,.05), transparent 60%);
+    border:1px solid rgba(232,226,214,.16);
+    border-left:2px solid rgba(201,162,39,.45);
+    padding:12px 16px;border-radius:2px;cursor:pointer;
+    transition:.22s;
+  }
+  .opt::before{content:"→ ";color:var(--amber);opacity:.75;}
+  .opt:hover{
+    border-color:rgba(201,162,39,.6);
+    border-left-color:var(--amber);
+    background:linear-gradient(to right, rgba(201,162,39,.13), transparent 70%);
+    transform:translateX(3px);
+  }
+  .opt:active{transform:translateX(1px);}
+
+  .foot{margin-top:44px;font-size:11px;color:#5f5a52;letter-spacing:.1em;display:flex;justify-content:space-between;}
+
+  /* 开始页 */
+  .cover{min-height:82vh;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:6px;}
+  .cover h1{
+    font-size:clamp(38px,9vw,64px);font-weight:400;letter-spacing:.22em;
+    margin:0 0 6px;color:#f2ece0;text-shadow:0 0 32px rgba(201,162,39,.18);
+  }
+  .cover .sub{color:var(--dim);letter-spacing:.18em;font-size:14px;margin-bottom:6px;}
+  .cover .blurb{color:#a9a196;font-size:14.5px;line-height:2;max-width:34em;margin:18px 0 4px;}
+  .cover .rule{width:56px;height:1px;background:var(--amber);opacity:.6;margin:22px 0;}
+  .cover .opt{max-width:340px;}
+  .cover .hintline{font-size:11.5px;color:#615b53;margin-top:20px;letter-spacing:.08em;}
+
+  @media (max-width:560px){
+    body{font-size:16px;line-height:1.9;}
+    .wrap{padding:18px 16px calc(56px + env(safe-area-inset-bottom));}
+    .hud{gap:8px 12px;font-size:12px;padding-top:8px;}
+    .prose p{text-align:left;}
+    .opt{padding:14px 14px;min-height:48px;}
+    .choices{gap:10px;margin-top:22px;}
+    .cover{min-height:72vh;}
+    .foot{margin-top:32px;}
+  }
+  html{-webkit-text-size-adjust:100%;}
+  body{overflow-x:hidden;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hud" id="hud">
+    <span class="stat" id="s-jiang">江砚 <b>0</b></span>
+    <span class="stat" id="s-lu">陆行舟 <b>0</b></span>
+    <span class="stat" id="s-solo">胆识 <b>0</b></span>
+    <span class="stat" id="s-clue">线索 <b>0</b></span>
+    <div class="chips" id="s-items"></div>
+    <span class="grow"></span>
+    <button class="ghost" id="btn-restart">重来</button>
+  </div>
+  <div id="stage"></div>
+  <div class="foot"><span id="f-left">回声走廊</span><span id="f-right"></span></div>
+</div>
+
+<tw-storydata name="回声走廊" startnode="1" creator="Doubao" creator-version="1.0" ifid="8C1F2A44-5D7B-4E19-A3C8-6B0E9D2F77B1" format="Harlowe" format-version="3.3.9" options="" tags="" zoom="1">
+<style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css"></style>
+<script role="script" id="twine-user-script" type="text/twine-javascript"></script>
+<tw-passagedata pid="1" name="序章·十七级台阶" tags="" position="100,100">(set: $jiang to 0)
+(set: $lu to 0)
+(set: $solo to 0)
+(set: $clue to 0)
+(set: $risk to 0)
+(set: $slot to 3)
+(set: $tape to false)
+(set: $key to false)
+(set: $old to false)
+(set: $list to false)
+(set: $v1 to false)
+(set: $v2 to false)
+(set: $v3 to false)
+(set: $v4 to false)
+(set: $v5 to false)
+
+明德中学的三号楼，1978年落成。三层以下早就让位给了新的综合楼，只剩最上面那一层走廊还孤零零地悬着。玻璃上贴着红漆的“拆”字，漆被雨淋成褐色，像一道结痂的伤口。
+
+从一楼到四楼，每层十七级台阶，四段，六十八级。学生们管它叫回声走廊：在这头说一句话，声音会在走廊另一端迟到两秒才回来，像有人替你回答了半句。
+
+你不讲鬼故事。你是校刊《回声》的实习编辑，高二（3）班，信的是纸上查得到的东西。
+
+但这周三，校刊邮箱里躺着一封没有署名的信。
+
+[[拆开信封-&gt;一封匿名信]]</tw-passagedata>
+<tw-passagedata pid="2" name="一封匿名信" tags="" position="240,100">信封是旧的，纸壳泛黄，邮戳是本校内部收发室的章。里面只有三行字，和一枚早已停用的校徽——2003年那一款，蓝底，银色麦穗。
+
+“三号楼四层。晚十点。
+
+走廊会告诉你，2003年林漪去了哪里。
+
+别再查她是怎么丢的，查她为什么没人找。”
+
+林漪这个名字，你在校史室墙上的“历届优秀学生”照片里见过一次，照片下方写着：2003届，高二（1）班。但档案里她那一页只剩一句话——随家人迁居外地。迁去哪里，没有写。那年夏天之后，学校里再没有人提起她。
+
+[[把信带给江砚-&gt;档案室·江砚]]
+[[去暗房找陆行舟-&gt;暗房·陆行舟]]
+[[谁也不告诉，自己先去看一趟-&gt;独自·走廊初探]]</tw-passagedata>
+<tw-passagedata pid="3" name="档案室·江砚" tags="" position="380,100">江砚是《回声》的主编，高三，说话像在写审稿意见。
+
+她把信看了三遍，把校徽翻过来对着台灯照，最后只给了两个字：“假的。”
+
+“哪句假？”
+
+“邮戳。收发室2005年就撤了。这封信要么是有人留着旧信封，要么……是有人想让我们以为它是从外面寄进来的。”
+
+她拉开最下面一格抽屉，抽出一把生锈的铜钥匙：“校刊的旧合订本都在档案室。2003年的也在。要查，就现在。”
+
+(set: $jiang to $jiang + 1)
+(set: $clue to $clue + 1)
+
+[[问她一句题外话-&gt;江砚的抽屉]]</tw-passagedata>
+<tw-passagedata pid="4" name="江砚的抽屉" tags="" position="520,100">2003年的合订本缺了第七期。
+
+第七期是高考前最后一期，按惯例该有“毕业寄语”和“学生来稿”。目录还在，文章却整页被裁走了，切口很齐，是刀片划的。
+
+抽屉最里面压着一张纸，是2003年6月教务处的一份油印通知，字迹已模糊：“关于高二（1）班林漪同学……暂停……配合调查……”
+
+落款处的签名被剪掉了。江砚盯着那半张纸看了很久。
+
+“我妈当年在教务处打字，”她说，“她抄过这份通知。抄完那天回家，她把打字机的色带剪了。”
+
+(set: $jiang to $jiang + 1)
+(set: $clue to $clue + 1)
+
+[[今晚十点，你会去吗-&gt;十点半·三号楼]]</tw-passagedata>
+<tw-passagedata pid="5" name="暗房·陆行舟" tags="" position="660,100">暗房的红灯把整个屋子染成一缸血。陆行舟正在显影，夹子夹着一张刚洗出来的照片。
+
+“来得正好。看看这个。”
+
+照片上是一条长走廊，逆光，尽头有个女生的背影，白衬衫，校服裙，手里拎着一只书包。照片背面用铅笔写着：2003.6.23，四层东侧。
+
+“哪来的？”
+
+“摄影社储物柜最底下，一盒没编号的底片。”他把显影盘推给你，“我洗了七张，只有这张有人。”
+
+他停了一下，声音低下去：“还有——这张底片是我舅舅拍的。他当年管三号楼的钥匙。”
+
+(set: $lu to $lu + 2)
+(set: $clue to $clue + 1)
+
+[[今晚十点，你去吗-&gt;十点半·三号楼]]</tw-passagedata>
+<tw-passagedata pid="6" name="独自·走廊初探" tags="" position="800,100">下午四点，三号楼的走廊空着。
+
+你在东头站定，对着西边喊了一声：“有人吗。”
+
+两秒钟后，你的声音回来了。
+
+回来了，但多了两个字。
+
+“……有人吗。”
+
+那两个字是很轻的、几乎被吞掉的“在的”。你没有说“在的”。
+
+你数着台阶往东走。十七级一段，四段，六十八级。走到第四段，你数到六十七。
+
+第六十八级台阶不在。
+
+它被一层薄薄的水泥抹平了，上面盖着一块铁格栅，格栅缝隙里透出灰白的光——是楼下旧书库的窗。
+
+(set: $clue to $clue + 1)
+(set: $solo to $solo + 1)
+(set: $risk to $risk + 1)
+
+[[回头，装作什么也没发现-&gt;老周的茶]]</tw-passagedata>
+<tw-passagedata pid="7" name="老周的茶" tags="" position="940,100">门卫室的老周在泡茶，六十五岁，2003年就在这所学校。
+
+“叫得挺响。”他把茶杯推过来，“那楼里没有鬼。回声是活人弄出来的——管子、水泥、空腔，声音跑一圈再回来。”
+
+“可我听见的是……”
+
+“听见什么不重要。”他打断你，“重要的是你想听什么。想听鬼，回声就是鬼；想听人，回声就是人。”
+
+他抬起头，眼睛清亮得不像老人：“2003年6月23号晚上，我在那栋楼里待了一整夜。第二天早上，我补了一段水泥。你要问的不是这个。你要问的是——我为什么补。”
+
+(set: $clue to $clue + 1)
+(set: $solo to $solo + 1)
+
+[[今晚十点，你还会去吗-&gt;十点半·三号楼]]</tw-passagedata>
+<tw-passagedata pid="8" name="十点半·三号楼" tags="" position="1080,100">九点五十五。
+
+(if: $jiang &gt;= 2)[
+江砚已经在铁门口等你，手里拎着两把手电和一叠复印的合订本。她不说“你怎么真来了”，只说：“跟上，别出声。”
+](else-if: $lu &gt;= 2)[
+陆行舟靠在铁门上，脚边放着三脚架和一卷绳子。“我带了闪光灯。”他说，“万一有东西，至少拍得清。”
+](else:)[
+没有人来。你一个人站在铁门前。钥匙孔里塞着一截粉笔头——有人不想让这栋楼今晚被打开。
+]
+
+十点整。
+
+[[推门进去-&gt;回声·第一次]]</tw-passagedata>
+<tw-passagedata pid="9" name="回声·第一次" tags="" position="1220,100">四层。手电的光柱先照到灰尘，再照到墙。走廊东头的水泥地被擦得很亮，像有人每天都拖。
+
+你们走到中段，脚步停下来的时候，回声还在走。
+
+一步，一步，一步。从东往西，不快不慢，停在第六十八级台阶的位置——那个被水泥抹平的位置。
+
+光柱转过去。那里什么也没有。
+
+然后手电灭了。
+
+(if: $lu &gt;= 2)[
+陆行舟骂了一声，闪光灯炸开。白光里，走廊尽头站着一个穿蓝工装的人，正把手里的东西塞进铁格栅的缝里。
+](else:)[
+黑暗里，你听见铁格栅被掀开的声音，一声很轻的“当”，然后是布料摩擦水泥的声音。
+]
+
+[[躲到走廊东头的墙角-&gt;夹层入口·门缝]]
+[[站在原地，把手电重新按亮-&gt;夜巡人的灯]]
+[[退下楼梯，今晚到此为止-&gt;第一章收束]]</tw-passagedata>
+<tw-passagedata pid="10" name="夹层入口·门缝" tags="" position="1360,100">你缩进走廊东头的死角。
+
+脚步声从你面前过去，带着一股樟脑和旧纸的味道，很慢，停在铁格栅前，蹲下，掀开格栅，下去了。
+
+光从缝隙里漏出来一点。你听见有人在下面整理东西，纸页翻动的声音，一叠，一叠，很有耐心。
+
+你在黑暗里等了十二分钟。
+
+等那个脚步声重新上去、走远、消失，你才爬过去，把手伸进格栅的缝里。指尖碰到一片冰凉——一把钥匙，铜的，柄上刻着一个数字：417。
+
+(set: $clue to $clue + 1)
+(set: $key to true)
+(set: $risk to $risk + 1)
+
+[[直起身-&gt;夜巡人的灯]]</tw-passagedata>
+<tw-passagedata pid="11" name="夜巡人的灯" tags="" position="1500,100">灯是从背后照过来的。白光手电，钉在你脸上。
+
+“几点了。”是老周的声音，不生气，像在问天气。
+
+“……十一点。”
+
+“三号楼十点半锁门。规矩是我定的，我自己都记不清多少年了。”他把手电垂下来一点，“今晚你看见什么了。”
+
+[[说实话：有人在铁格栅下面-&gt;承认看见]]
+[[什么都不说-&gt;第一章收束]]</tw-passagedata>
+<tw-passagedata pid="12" name="承认看见" tags="" position="1640,100">老周沉默了一会儿。
+
+“是老韩家的孩子。”他说，“不对——现在该叫韩副主任了。”
+
+“他在下面干什么？”
+
+“收拾东西。”老周把手电关了，“三号楼下个月拆。拆之前，有些纸不能留。他二十年前也这么收拾过一次。”
+
+他往楼下走，走了几级台阶又停下：“你要真想弄清楚，明天中午来门卫室。我这把年纪，搬不动了。”
+
+(set: $clue to $clue + 1)
+(set: $risk to $risk + 1)
+
+[[回宿舍-&gt;第一章收束]]</tw-passagedata>
+<tw-passagedata pid="13" name="第一章收束" tags="" position="1780,100">你回到宿舍已经快十二点。
+
+躺下之后，走廊里的脚步声跟着你进了梦里：一步，一步，停在第六十八级——那一级台阶，二十年来一直缺着。
+
+明天中午有三个小时。三个小时里，你最多跑三趟。
+
+[[第二天·午休-&gt;第二天·午休]]</tw-passagedata>
+<tw-passagedata pid="14" name="第二天·午休" tags="" position="1920,100">午休铃响。你有三个小时——或者说，三次机会。
+
+(if: $v1 and $v2 and $v3 and $v4 and $v5)[
+能去的地方都去过了。剩下的时间，只够你把手里的东西再翻一遍。
+]
+
+(if: $slot &gt; 0 and not $v1)[
+[[校史室·旧合订本-&gt;校史柜]]
+]
+
+(if: $slot &gt; 0 and not $v2)[
+[[门卫室·老周-&gt;门卫室·请求]]
+]
+
+(if: $slot &gt; 0 and not $v3)[
+[[心理室·苏昀-&gt;心理室·苏昀]]
+]
+
+(if: $slot &gt; 0 and not $v4)[
+[[教务处·韩立-&gt;教务处·韩立]]
+]
+
+(if: $slot &gt; 0 and $clue &gt;= 2 and not $v5)[
+[[骑车去城西，找郑老师-&gt;郑老师的家]]
+]
+
+(if: $slot &lt;= 0)[
+天色不早了。
+
+[[准备今晚-&gt;午休结束]]
+]</tw-passagedata>
+<tw-passagedata pid="15" name="校史柜" tags="" position="2060,100">校史室在校办楼三层。靠门一排铁皮柜，标签写着：1998—2005 校刊存档。
+
+(if: $key)[
+417那把钥匙正好能开最下面一格的锁。你决定不去想这是不是巧合。
+](else:)[
+最下面一格的锁锈住了。你用回形针拨了七分钟。
+]
+
+2003年第七期躺在最底下。不是缺页，是整期都没装订——清样，油墨还是没干透的那种蓝黑。
+
+第一页是毕业寄语。第二页是一篇没署真名的学生来稿，标题只有两个字：《回声》。
+
+作者栏写着：林漪。
+
+(set: $clue to $clue + 1)
+(set: $old to true)
+(set: $v1 to true)
+(set: $slot to $slot - 1)
+
+[[读那篇文章-&gt;一页没有刊出的文章]]</tw-passagedata>
+<tw-passagedata pid="16" name="一页没有刊出的文章" tags="" position="2200,100">《回声》全文八百字。她写的是三号楼那条走廊：
+
+“在这栋楼里，说话的人总要等两秒才听到自己的声音。我一直觉得那两秒很重要——那两秒里，你还有机会改口。”
+
+最后一段被红笔划掉了，旁边有一行批注，是陌生的硬笔字：“不宜刊发。建议作者先处理个人问题。”
+
+“个人问题。”你把这四个字念出来。二十年前，一个十七岁的女生，被一份油印通知定性成了“个人问题”。
+
+(set: $clue to $clue + 1)
+
+[[回午休-&gt;第二天·午休]]</tw-passagedata>
+<tw-passagedata pid="17" name="门卫室·请求" tags="" position="2340,100">老周把一串钥匙挂在钩子上，指着楼下：“地下室库房还有三十七箱旧书，是四层书房清出来的。学校要拆楼，我腿不行了，没人搬。”
+
+“搬完怎么样？”
+
+“搬完，我给你一样东西。”他顿了顿，“钥匙你先拿着。四层那个铁格栅，别说是我给的。”
+
+(set: $key to true)
+(set: $clue to $clue + 1)
+(set: $v2 to true)
+(set: $slot to $slot - 1)
+
+[[卷起袖子，搬-&gt;搬书]]</tw-passagedata>
+<tw-passagedata pid="18" name="搬书" tags="" position="2480,100">三十七箱，两小时。你的校服后背湿透了，手上全是纸边划的口子。
+
+最后一箱搬到一半，箱底掉出一本硬壳册子，封皮写着：2003年 学籍异动登记。
+
+林漪那一页：“2003年6月25日，转入……（地名被涂改液覆盖）”。
+
+涂改液底下，用铅笔还能隐约看出两个字：南屿。
+
+她把名字留在了纸上。只是有人想把它涂掉。
+
+(set: $clue to $clue + 1)
+(set: $solo to $solo + 1)
+
+老周坐在门槛上喘气，忽然说：“城西有个退休的郑老师，她带过那个班。她院子里有一台旧录音机。”
+
+[[回午休-&gt;第二天·午休]]</tw-passagedata>
+<tw-passagedata pid="19" name="心理室·苏昀" tags="" position="2620,100">苏昀是这学期新来的心理老师。办公室里有股樟脑丸的味道。
+
+你没打算说真话，但她先开了口：“你这两天睡不好。眼睛下面——”
+
+“老师，你信回声吗。”
+
+“信。回声是声音的延迟。”她转着杯子，“人也有延迟。有些事发生的时候你没反应，两年后才痛。这不叫迟钝，这叫保护。”
+
+她递给你一张纸，上面画着一条走廊：“如果那栋楼让你害怕，就别一个人去。恐惧不需要被证明，它只需要一个能说话的人。”
+
+(set: $clue to $clue + 1)
+(set: $risk to $risk - 1)
+(set: $v3 to true)
+(set: $slot to $slot - 1)
+
+[[回午休-&gt;第二天·午休]]</tw-passagedata>
+<tw-passagedata pid="20" name="教务处·韩立" tags="" position="2760,100">韩立的办公室门上贴着“教务处（副主任）”。
+
+他四十四岁，头发梳得整整齐齐，桌上摆着一份《三号楼拆除方案（终稿）》。
+
+“校刊的孩子？”他笑了一下，“三号楼的事，我建议你不要写。写出来没人信，还耽误你高考。”
+
+“2003年6月23号，你在三号楼吗。”
+
+他的笑没有变：“我在家。那天晚上我在家。”
+
+他起身去接电话。桌上那份方案底下压着一张A4纸，露出半个标题：三号楼固定资产清理清单。第一行写着：旧档案 412卷，销毁。
+
+你在他转身之前，把那一页抽了出来。
+
+(set: $list to true)
+(set: $clue to $clue + 1)
+(set: $risk to $risk + 2)
+(set: $v4 to true)
+(set: $slot to $slot - 1)
+
+[[出去-&gt;韩立的警告]]</tw-passagedata>
+<tw-passagedata pid="21" name="韩立的警告" tags="" position="2900,100">“沈聿。”
+
+他在走廊里叫住你。声音不大，走廊很长，回声迟了两秒才把你的名字还回来。
+
+“我知道你在查什么。”他说，“二十年前有人查过，查到最后，什么都没查到。你猜为什么。因为查一件不存在的事，最好的结果就是什么也查不到。”
+
+他把手插进西装口袋：“三号楼下个月拆。你现在收手，校刊还能出到下个月。你要继续，也行——只是别怪纸不够。”
+
+(set: $risk to $risk + 1)
+
+[[回午休-&gt;第二天·午休]]</tw-passagedata>
+<tw-passagedata pid="22" name="郑老师的家" tags="" position="3040,100">城西，老小区。院子里晒着豆角和一台落灰的录音机。
+
+郑文澜七十岁，退休物理老师，2003年高二（1）班班主任。她看见校徽的时候手抖了一下。
+
+“你们都查到她那儿去了。”她让你进屋，“我等你来，等了二十年。”
+
+“林漪现在在哪。”
+
+“南屿。一所中学的图书馆。她现在叫林知微。”她给你倒茶，“2003年6月23号晚上，我在四层走廊尽头找到她。她在铁格栅上面坐着，穿白衬衫，脚悬在外面。”
+
+“她跳了吗。”
+
+“没有。她说她只是想坐一会儿，坐到一个没人能听见她说话的地方。”郑老师的手停在茶壶上，“我把她带走了。我妹妹在南屿，我把她送过去，改了名字。第二天，学校报警说她离家出走——这个词，是我教他们写的。”
+
+(set: $clue to $clue + 2)
+(set: $v5 to true)
+(set: $slot to $slot - 2)
+
+[[问她一句：你为什么帮她-&gt;郑老师的回答]]</tw-passagedata>
+<tw-passagedata pid="23" name="郑老师的回答" tags="" position="3180,100">“因为我也是共犯。”
+
+郑老师拉开抽屉，里面是一支钢笔，笔杆上刻着一个“漪”字。
+
+“期末试卷泄露案。真正泄题的是班长韩立，他父亲是校董。事发之后，他把林漪的笔丢在复印室。我查到了，但我不敢说——她父亲那几年刚出车祸没了，母亲改嫁，她继父……脾气不好。学校一开除她，她只能回那个家。”
+
+“所以你把证据藏起来了。”
+
+“藏在夹层里。”她说，“一支笔，一份复印室的借出登记。我告诉自己，这是抵押品，是将来某天能换她清白的东西。可二十年过去，我什么都没换。”
+
+她指了指院子里的录音机：“那台机器是物理组的。2003年6月23号夜里，我拿着它上四层——我想留一句话，万一我出了什么事，至少有人知道她说的是什么。我按了录音，忘了关。”
+
+(set: $clue to $clue + 1)
+(set: $tape to true)
+
+[[带着录音机回学校-&gt;第二天·午休]]</tw-passagedata>
+<tw-passagedata pid="24" name="午休结束" tags="" position="3320,100">铃响第二遍。你手里的东西摊在桌上：一台旧录音机，一张销毁清单，一本缺了第七期的合订本，一把刻着417的钥匙。
+
+今晚十点。三号楼拆除前的最后一个晚上。
+
+(if: $risk &gt;= 4)[
+韩立今天已经见过你两次。你不太确定今晚会不会有人在那儿等你。
+]
+
+[[今晚十点，三号楼-&gt;夜·三号楼门口]]</tw-passagedata>
+<tw-passagedata pid="25" name="夜·三号楼门口" tags="" position="3460,100">九点五十。铁门上的锁换了。
+
+(if: $key)[
+417那把钥匙插进去，转了半圈，锁开了。它本该是四层的钥匙，可它开的是这栋楼的过去。
+[[上四层-&gt;四层走廊]]
+](else-if: $lu &gt;= 2)[
+陆行舟从围墙那边探出头，手里提着一把断线钳。“我舅舅的钥匙，我配了一把。”他说，“别问。”
+[[上四层-&gt;四层走廊]]
+](else:)[
+你只能从三楼那扇没关严的窗爬进去。落地的时候脚踝扭了一下，疼得眼前发黑。
+(set: $risk to $risk + 1)
+[[上四层-&gt;四层走廊]]
+]</tw-passagedata>
+<tw-passagedata pid="26" name="四层走廊" tags="" position="3600,100">四层。手电。灰尘。
+
+你走到中段，停住，等。
+
+一秒。两秒。
+
+回声来了。不是脚步，是一个人的呼吸声，很近，就在你右后方一步的位置。
+
+(if: $tape)[
+你手里的录音机忽然自己转了一下磁带。二十年前那盘带子，还留在这个带仓里。
+](else:)[
+你什么都没有。
+]
+
+[[掀开铁格栅-&gt;夹层入口]]
+[[先站在这里，等它再来一次-&gt;十七级台阶上的人]]</tw-passagedata>
+<tw-passagedata pid="27" name="十七级台阶上的人" tags="" position="3740,100">你站着不动。
+
+呼吸声慢慢变成脚步声，从东往西，一步，一步，停在第六十八级——那一级不存在的地方。
+
+光柱扫过去。蓝工装，弓着背，怀里抱着一摞用尼龙绳捆好的纸。
+
+是老周。
+
+“我就知道你会来。”他说，“我今天下午搬完了三十七箱。这是最后一摞：四层书房的老档案。二十年前的处分记录、举报信、检讨书，全在这儿。”
+
+“你要烧掉。”
+
+“我要留着。”他把纸摞放在台阶上，“这些纸留着，拆楼的时候就会一起埋。可要是有人知道它们在哪，就埋不了。”
+
+他抬头看你：“你手里那些东西，够不够让他们不拆。”
+
+(set: $clue to $clue + 1)
+(set: $solo to $solo + 1)
+
+[[掀开铁格栅，下去-&gt;夹层入口]]
+[[问他为什么替她守二十年-&gt;老周的二十年]]</tw-passagedata>
+<tw-passagedata pid="28" name="老周的二十年" tags="" position="3880,100">“我守的不是她。”老周说，“我守的是那两秒。”
+
+“什么。”
+
+“这条走廊，说话要等两秒才听见自己的声音。那两秒里，人还有机会改口。”他咳了一声，“2003年那天晚上，我巡到四层，听见她在走廊尽头说话。她说什么我没听清，我只听见两秒之后，她的声音回来了。她一个人在那儿，等自己的回声，等了一整夜。”
+
+“我第二天把第六十八级补了水泥。因为那一级是空的——从那儿下去，就是夹层。我怕她哪天回来，从那儿掉下去。”
+
+(set: $clue to $clue + 1)
+(set: $solo to $solo + 1)
+
+[[掀开铁格栅，下去-&gt;夹层入口]]</tw-passagedata>
+<tw-passagedata pid="29" name="夹层入口" tags="" position="4020,100">铁格栅下面是一段垂直的短梯，七级。
+
+落地的时候，脚底是软的——纸。整层夹层都铺着纸：旧试卷、旧学籍、旧检讨，堆到膝盖高。空气里有霉味、樟脑味，还有一种很淡的墨水味。
+
+灰白的光从南边一扇被报纸糊住的窗漏进来。
+
+(set: $risk to $risk + 1)
+
+[[往里走-&gt;夹层·霉味与纸]]</tw-passagedata>
+<tw-passagedata pid="30" name="夹层·霉味与纸" tags="" position="4160,100">夹层是一条和上面走廊等长的通道，宽不过两步。你往里走，脚下发出纸页被压碎的脆响。
+
+走到中段，光柱照到一摞捆得整整齐齐的东西：十二本，一年一本，都是2003年那一期的校刊清样。
+
+最上面压着一个铁皮饼干盒。
+
+盒子里有三样东西。
+
+(set: $clue to $clue + 1)
+
+[[打开看-&gt;旧书库·磁带]]</tw-passagedata>
+<tw-passagedata pid="31" name="旧书库·磁带" tags="" position="4300,100">第一样：一支钢笔，笔杆上刻着“漪”。
+
+第二样：一张复印室借出登记，2003年6月18日，借出人签名：韩立。
+
+第三样：一盘磁带，标签上写着——物理组，2003.6.23，四层。
+
+(if: $tape)[
+你口袋里那台录音机，和这盘带子刚好是一对。
+](else:)[
+你没有录音机。带子在你手上，很轻，像一封没写完的信。
+]
+
+(set: $clue to $clue + 1)
+(set: $tape to true)
+
+[[再往深处走-&gt;木箱里的信]]</tw-passagedata>
+<tw-passagedata pid="32" name="木箱里的信" tags="" position="4440,100">夹层尽头，一个樟木箱。箱子上锁，锁眼里塞着粉笔头——和老周塞在铁门锁眼里的一样。
+
+箱子里是信。橡皮筋捆着，没有收信人，也没有寄信人。
+
+最早的一封，日期是2004年9月，纸已经黄得透明：
+
+“今天开学。我数了六十八级台阶，第六十八级那里，水泥补好了。谢谢你。但我不会回来了。”
+
+最新的一封，日期是今年三月，字迹换成了年轻人的：
+
+“听说三号楼要拆。我要去南屿了。这一次我会自己回来——不是从走廊，是从正门。”
+
+(set: $clue to $clue + 1)
+(set: $solo to $solo + 1)
+
+[[身后有人-&gt;身后有人]]</tw-passagedata>
+<tw-passagedata pid="33" name="身后有人" tags="" position="4580,100">纸页被踩碎的声音。
+
+你回头。光柱照到一张脸。
+
+(if: $risk &gt;= 4)[
+韩立。他手里拿着手电，另一只手里是一把折叠美工刀，刀片没打开，但已经握在手心。
+
+[[对峙·韩立]]
+](else:)[
+老周。他站在短梯底下，仰着头看你，蓝工装的口袋里露出一截尼龙绳。
+
+[[对峙·周德海]]
+]</tw-passagedata>
+<tw-passagedata pid="34" name="对峙·韩立" tags="" position="4720,100">“沈聿。”他站在夹层入口的光里，声音在这个纸做的空间里显得很软，“你手里那个饼干盒，是我十年前放进去的。”
+
+“为什么。”
+
+“因为我怕。”他说得很平，“二十年前我做了一件事，然后用二十年时间证明那件事没发生过。每年我搬下来一箱纸，每年我告诉自己，明年就可以忘了。”
+
+他往前一步，纸在他脚下一起一伏：“你现在把盒子拿上去，明天校刊一登，我这二十年就没了。你懂吗。不是名声，是二十年。”
+
+[[“那你把林漪的二十年还给谁。”-&gt;播放键]]
+[[“我可以不登。但你得把拆迁停下。”-&gt;播放键]]
+[[握紧盒子，往后退一步-&gt;播放键]]</tw-passagedata>
+<tw-passagedata pid="35" name="对峙·周德海" tags="" position="4860,100">“盒子是你放的，我知道。”老周说，“十年了，我每年看你半夜下来一趟，往里头添一箱。”
+
+“你不拦我。”
+
+“我拦你干什么。你搬下去一箱，我就记一笔账。十二本清样，我一年放一本。你藏，我记。咱俩谁也没赢。”
+
+他从口袋里掏出一张纸：“拆迁审批表。签字的是他，盖章的是他，‘建议拆除’四个字是他写的。这份东西，比盒子管用。”
+
+(set: $clue to $clue + 1)
+(set: $list to true)
+
+[[楼上还有脚步声-&gt;播放键]]</tw-passagedata>
+<tw-passagedata pid="36" name="播放键" tags="" position="5000,100">你把磁带放进录音机。
+
+沙沙声。很长的一段沙沙声。
+
+然后是一个女人的声音，很年轻，被走廊的空间拉得有点扁：
+
+“林漪。你听见了吗。你现在说的话，两秒之后会回到你耳朵里。所以你听清楚再说。”
+
+一段沉默。
+
+然后是另一个声音，更轻，几乎被沙沙声吞掉：
+
+“郑老师，我不是想死。我只是想找一个地方，说话的时候没有人打断我。”
+
+“那你跟我说。”
+
+“我说了。我全说了。我说卷子不是我偷的，我说笔是他放的，我说我不敢回家。”
+
+沙沙声。
+
+“郑老师，你能带我走吗。”
+
+“能。”
+
+磁带转到底，咔的一声，停了。
+
+(if: $jiang &gt;= 2)[
+不知道什么时候，江砚站在夹层入口的梯子上，手里举着录音笔。她没说话，只是把录音笔举高了一点，红色的指示灯在暗处亮着。
+(set: $jiang to $jiang + 1)
+](else-if: $lu &gt;= 2)[
+不知道什么时候，陆行舟从另一头的窗爬了进来，肩膀上挂着相机。快门声在夹层里像一记心跳。
+(set: $lu to $lu + 1)
+](else:)[
+整个夹层只有你一个人。上面走廊里，脚步声停了。
+]
+
+[[接下来怎么办-&gt;抉择·三个方向]]</tw-passagedata>
+<tw-passagedata pid="37" name="抉择·三个方向" tags="" position="5140,100">磁带还在转轴上空转。
+
+现在是十一点四十七分。三号楼下个月拆。你手上有一盘带子、一支笔、一张借出登记、一份销毁清单，还有一箱没有寄出的信。
+
+[[把带子交给江砚，明天头版-&gt;公开之前]]
+[[交给学校，让他们内部处理-&gt;内部处理]]
+[[什么都不做，先离开这栋楼-&gt;沉默的代价]]
+[[留在夹层，等那个人自己下来-&gt;留在夹层]]</tw-passagedata>
+<tw-passagedata pid="38" name="公开之前" tags="" position="5280,100">你把手电关了。
+
+黑暗里，走廊还在响。你想：这一次，两秒之后回过来的，最好不是自己的声音。
+
+(if: $clue &gt;= 5 and $tape and ($old or $list) and ($jiang &gt;= 3 or $lu &gt;= 3 or $solo &gt;= 3))[
+[[推开铁格栅，上去-&gt;结局·回声之外]]
+](else:)[
+你手上的东西还差一截。第二天你才知道，差的那一截最要命。
+
+[[往前走-&gt;结局·合谋者]]
+]</tw-passagedata>
+<tw-passagedata pid="39" name="内部处理" tags="" position="5420,100">你把带子交上去，写了一份情况说明放进校长信箱。
+
+(if: $clue &gt;= 4)[
+[[回宿舍睡觉-&gt;结局·走廊不再响]]
+](else:)[
+[[回宿舍睡觉-&gt;结局·合谋者]]
+]</tw-passagedata>
+<tw-passagedata pid="40" name="沉默的代价" tags="" position="5560,100">你把铁格栅盖回去，一级一级下楼梯。
+
+走到操场上的时候，你回头看了一次三号楼。四层的窗都是黑的。
+
+[[回宿舍-&gt;结局·合谋者]]</tw-passagedata>
+<tw-passagedata pid="41" name="留在夹层" tags="" position="5700,100">你没有走。
+
+你把录音机放在纸堆上，按了播放。磁带转到底，又倒回去，又转到底。
+
+十一点，十二点，一点。
+
+[[三点十七分-&gt;结局·夜里三点十七分]]</tw-passagedata>
+<tw-passagedata pid="42" name="结局·回声之外" tags="" position="5840,100">十一月十四日，《回声》出第七期。
+
+头版没有标题，只有一张走廊的照片，和一句话：回声是活人的延迟。
+
+同一天，江砚把录音带的副本送到区教育局，附上复印室借出登记、销毁清单和十二本校刊清样。
+
+十一月二十一日，三号楼拆除暂停。
+
+十二月三日，南屿一所中学的图书馆里，一个叫林知微的女人接了一通电话。她在电话里沉默了很久，最后只说了一句：“走廊还在吗。”
+
+十二月二十日，三号楼四层重新开放。走廊被保留下来，改名叫校史走廊。第六十八级台阶的位置铺了一块铜牌，上面刻着两个字：回声。
+
+开学那天，一个穿深蓝外套的女人站在东头，对着西边说了一声：“有人吗。”
+
+两秒钟后，她听见了自己的回声。
+
+韩立被停职调查，后来调离。周德海退休，走的那天把门卫室的钥匙串挂在钩子上，没有人接手。
+
+(if: $jiang &gt;= 3)[
+你和江砚合写的那篇稿子，被她压在主编抽屉最上面一格。她说等你毕业那年再登一次，署两个人的名字。
+](else-if: $lu &gt;= 3)[
+陆行舟把那一夜的底片重新洗了一张，挂在摄影社的墙上。照片下面只有一行小字：2003.6.23，与2023.11.14。
+](else:)[
+你把那支刻着“漪”字的钢笔还给了林知微。她没有拿走，说：“留着吧。你们学校还缺一支笔。”
+]
+
+结局达成：回声之外。
+
+[[关于本作-&gt;关于本作]]</tw-passagedata>
+<tw-passagedata pid="43" name="结局·走廊不再响" tags="" position="5980,100">你把带子交上去，写了一份情况说明放进校长信箱，然后回宿舍睡觉。那天晚上你睡得很好，好得有点不像话。
+
+十一月，拆迁照常进行。三号楼像一截被抽掉的骨头，两天就塌了。夹层里的纸和水泥一起被压进卡车，运往城郊。
+
+录音带被“归档”。归档的意思是没有回执。
+
+十二月的会议上，韩立被提拔为教务处主任。他经过你身边时停了半秒，说：“你做得对。有些事，得有人查一遍，然后忘掉。”
+
+第二年春天，校史走廊没有出现。那片地上铺了塑胶跑道，红色的，很干净。
+
+林知微没有回来。她给学校寄过一封信，被收发室退回了——地址失效，学校搬家。
+
+你有时候还会在操场上听见两秒之后的声音。可是操场上没有走廊，声音不回来。
+
+结局达成：走廊不再响。
+
+[[关于本作-&gt;关于本作]]</tw-passagedata>
+<tw-passagedata pid="44" name="结局·合谋者" tags="" position="6120,100">你什么也没能证明。
+
+韩立的动作比纸快。第二天，销毁清单的原件“不存在”；校刊的印刷经费卡在审批里；你在夹层里拍的照片，被鉴定为“光线不足，无法辨认”。
+
+一月，三号楼拆了。二月，你因为“擅自进入待拆建筑”被记过一次。班主任在班会上说：有些同学，编故事编得太投入。
+
+最讽刺的是，你后来真的开始怀疑：那盘磁带是不是你自己录的，那些信是不是你自己写的，那一夜的脚步声，是不是你等出来的两秒延迟。
+
+走廊不在了，回声无处可回。它就留在你耳朵里，一直到很多年以后。
+
+结局达成：合谋者。
+
+[[关于本作-&gt;关于本作]]</tw-passagedata>
+<tw-passagedata pid="45" name="结局·夜里三点十七分" tags="" position="6260,100">你留在了夹层。
+
+不知道过了多久。手电电量掉到最后一格，光变成一团昏黄。
+
+你听见短梯那边有声音，很轻，不急。有人在下一级一级地下来，一共七级，停在最后一级，不动了。
+
+“沈聿。”一个声音说，“你听见了吗。”
+
+你没有回答。你在等两秒。
+
+两秒之后，那个声音回来了。不是从短梯，是从你身后。
+
+“你听见了吗。”
+
+凌晨三点十七分，门卫室的老周听见三号楼里有人在走廊上说话。他拿着手电上去，四层是空的。铁格栅盖着，第六十八级台阶补着。
+
+只有夹层的南窗开着，风把一叠信吹得满地都是。
+
+第二天的晨会上，没有人提到你。你请了三天病假。第四天你回到教室，座位上的课本还在原处，只是书角被谁翻过。
+
+结局达成：夜里三点十七分。
+
+[[关于本作-&gt;关于本作]]</tw-passagedata>
+<tw-passagedata pid="46" name="关于本作" tags="" position="6400,100">《回声走廊》
+
+校园悬疑 · 互动叙事 · 46个段落 · 4个结局
+
+操作：点击任意一个带箭头的选项继续。左下角显示你当前的好感度、线索数和携带的道具；进度会自动存档，关掉页面再打开可以从头继续（开始页会提供“继续上一次”）。
+
+变量：好感（江砚／陆行舟）、胆识（独自行动）、线索数、风险值，以及四件道具——417钥匙、磁带、2003校刊清样、销毁清单。真结局需要线索不少于5、手上有磁带、且至少有清样或清单其中一件，同时某条关系线或独自线走到3。
+
+Twine 用法：本作同时是 Twine 的故事存档。打开 Twine，选择“导入”，选中本文件即可还原全部段落，再用 Harlowe 3 格式重新出版或继续改写。
+
+[[重新从头开始-&gt;序章·十七级台阶]]</tw-passagedata>
+</tw-storydata>
+
+<script>
+(function(){
+  "use strict";
+
+  var sd = document.querySelector("tw-storydata");
+  var passages = {}, order = [];
+  Array.prototype.forEach.call(sd.querySelectorAll("tw-passagedata"), function(el){
+    var nm = el.getAttribute("name");
+    passages[nm] = el.textContent.replace(/^\n+/, "");
+    order.push(nm);
+  });
+  var START = "序章·十七级台阶";
+  var V = {}, current = null;
+  var SAVE_KEY = "echo-corridor-save-v1";
+  var END_KEY  = "echo-corridor-endings-v1";
+
+  /* ---------- 存档 ---------- */
+  function storeGet(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } }
+  function storeSet(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){} }
+
+  function autosave(){
+    storeSet(SAVE_KEY, JSON.stringify({v:V, p:current}));
+  }
+  function loadSave(){
+    var raw = storeGet(SAVE_KEY);
+    if(!raw) return null;
+    try{
+      var o = JSON.parse(raw);
+      if(o && o.p && passages[o.p]) return o;
+    }catch(e){}
+    return null;
+  }
+  function endings(){
+    var raw = storeGet(END_KEY);
+    try{ return raw ? JSON.parse(raw) : []; }catch(e){ return []; }
+  }
+  function markEnding(name){
+    if(name.indexOf("结局·") !== 0) return;
+    var list = endings();
+    if(list.indexOf(name) < 0){ list.push(name); storeSet(END_KEY, JSON.stringify(list)); }
+  }
+
+  /* ---------- 表达式 ---------- */
+  /*ENGINE_START*/
+  function toJS(expr){
+    return expr
+      .replace(/\$([A-Za-z_][A-Za-z0-9_]*)/g, 'V["$1"]')
+      .replace(/\band\b/g, "&&")
+      .replace(/\bor\b/g, "||")
+      .replace(/\bnot\b/g, "!");
+  }
+  function test(cond){
+    try{ return !!new Function("V", "return (" + toJS(cond) + ");")(V); }
+    catch(e){ return false; }
+  }
+  function setVar(stmt){
+    var m = stmt.match(/\$([A-Za-z_][A-Za-z0-9_]*)\s+to\s+(.*)$/);
+    if(!m) return;
+    try{ V[m[1]] = new Function("V", "return (" + toJS(m[2]) + ");")(V); }catch(e){}
+  }
+
+  /* ---------- 宏解析 ---------- */
+  function parseClause(s, pos){
+    var type = null, colon = -1;
+    if(s.startsWith("(if:", pos)){ type = "if"; colon = pos + 3; }
+    else if(s.startsWith("(else-if:", pos)){ type = "elseif"; colon = pos + 8; }
+    else if(s.startsWith("(else:)", pos)){ type = "else"; }
+    else return null;
+
+    var cp, d = 0;
+    if(type === "else"){
+      cp = s.indexOf(")", pos);
+    }else{
+      // 从子句的 "(" 开始配对，条件里的括号（如 ($a or $b)）也要正确计数
+      cp = pos;
+      for(; cp < s.length; cp++){
+        if(s[cp] === "(") d++;
+        else if(s[cp] === ")"){ d--; if(d === 0) break; }
+      }
+    }
+    if(cp < 0 || cp >= s.length) return null;
+    var cond = (type === "else") ? "true" : s.slice(colon + 1, cp).trim();
+    var p = cp + 1;
+    while(p < s.length && /\s/.test(s[p])) p++;
+    if(s[p] !== "[") return null;
+    var depth = 0, q = p;
+    for(; q < s.length; q++){
+      if(s[q] === "[") depth++;
+      else if(s[q] === "]"){ depth--; if(depth === 0) break; }
+    }
+    if(q >= s.length) return null;
+    return {type:type, cond:cond, hook:s.slice(p + 1, q), next:q + 1};
+  }
+
+  function evalBlock(s){
+    var out = "", i = 0;
+    while(i < s.length){
+      var rest = s.slice(i);
+      var mIf = rest.match(/\(if:/);
+      var mSet = rest.match(/\(set:/);
+      var iIf = mIf ? i + mIf.index : -1;
+      var iSet = mSet ? i + mSet.index : -1;
+
+      if(iIf >= 0 && (iSet < 0 || iIf < iSet)){
+        var chain = [], cl = parseClause(s, iIf);
+        if(!cl){ out += s.slice(i, iIf + 4); i = iIf + 4; continue; }
+        chain.push(cl);
+        var p = cl.next, probe = p;
+        while(probe < s.length && /\s/.test(s[probe])) probe++;
+        var nx = parseClause(s, probe);
+        while(nx && (nx.type === "elseif" || nx.type === "else")){
+          chain.push(nx);
+          p = nx.next; probe = p;
+          while(probe < s.length && /\s/.test(s[probe])) probe++;
+          nx = parseClause(s, probe);
+        }
+        out += s.slice(i, iIf);
+        var chosen = null;
+        for(var k = 0; k < chain.length; k++){
+          if(chain[k].type === "else" || test(chain[k].cond)){ chosen = chain[k]; break; }
+        }
+        if(chosen) out += evalBlock(chosen.hook);
+        i = p;
+        continue;
+      }
+
+      if(iSet >= 0){
+        out += s.slice(i, iSet);
+        var sub = s.slice(iSet);
+        var mm = sub.match(/^\(set:\s*([^)]*)\)/);
+        if(!mm){ out += s.slice(iSet, iSet + 5); i = iSet + 5; continue; }
+        setVar(mm[1]);
+        i = iSet + mm[0].length;
+        continue;
+      }
+
+      out += rest;
+      break;
+    }
+    return out;
+  }
+
+  /* ---------- 渲染 ---------- */
+  function esc(t){
+    return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function render(text){
+    var links = [];
+    var tokenized = text.replace(/\[\[([^\]]*?)\]\]/g, function(m, inner){
+      var label = inner, target = inner;
+      var arrow = inner.indexOf("->");
+      if(arrow >= 0){ label = inner.slice(0, arrow).trim(); target = inner.slice(arrow + 2).trim(); }
+      else { label = inner.replace(/\|.*$/, "").trim(); target = inner.replace(/^.*\|/, "").trim(); }
+      links.push({label:label, target:target});
+      return "\u0001" + (links.length - 1) + "\u0002";
+    });
+
+    var out = evalBlock(tokenized);
+
+    var seg = out.split(/\u0001(\d+)\u0002/);
+    var prose = "", picked = [];
+    for(var k = 0; k < seg.length; k++){
+      if(k % 2 === 0) prose += seg[k];
+      else picked.push(links[parseInt(seg[k], 10)]);
+    }
+
+    var htmlOut = prose.split(/\n\s*\n/).map(function(par){
+      par = par.replace(/^\s+|\s+$/g, "");
+      if(!par) return "";
+      return "<p>" + esc(par).replace(/\n/g, "<br>") + "</p>";
+    }).join("");
+
+    return {html: htmlOut, choices: picked};
+  }
+  /*ENGINE_END*/
+
+  function updateHud(){
+    function setStat(id, val, show){
+      var el = document.getElementById(id);
+      el.classList.toggle("hide", !show);
+      el.querySelector("b").textContent = val;
+    }
+    setStat("s-jiang", V.jiang || 0, (V.jiang || 0) > 0);
+    setStat("s-lu", V.lu || 0, (V.lu || 0) > 0);
+    setStat("s-solo", V.solo || 0, (V.solo || 0) > 0);
+    setStat("s-clue", V.clue || 0, true);
+
+    var items = [];
+    if(V.key) items.push("417 钥匙");
+    if(V.tape) items.push("磁带");
+    if(V.old) items.push("2003 清样");
+    if(V.list) items.push("销毁清单");
+    document.getElementById("s-items").innerHTML = items.map(function(t){
+      return '<span class="chip">' + esc(t) + "</span>";
+    }).join("");
+
+    var done = endings().length;
+    document.getElementById("f-right").textContent = "结局 " + done + "/4";
+  }
+
+  function go(name){
+    if(!passages[name]) return;
+    current = name;
+    markEnding(name);
+
+    var stage = document.getElementById("stage");
+    stage.innerHTML = "";
+    var r = render(passages[name]);
+
+    var chap = document.createElement("div");
+    chap.className = "chapter";
+    chap.textContent = name;
+    stage.appendChild(chap);
+
+    var prose = document.createElement("div");
+    prose.className = "prose fade";
+    prose.innerHTML = r.html;
+    stage.appendChild(prose);
+
+    if(r.choices.length){
+      var box = document.createElement("div");
+      box.className = "choices";
+      r.choices.forEach(function(c){
+        var b = document.createElement("button");
+        b.className = "opt";
+        b.type = "button";
+        b.textContent = c.label;
+        b.addEventListener("click", function(){ go(c.target); });
+        box.appendChild(b);
+      });
+      stage.appendChild(box);
+    }
+
+    updateHud();
+    autosave();
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function showCover(){
+    var saved = loadSave();
+    document.getElementById("hud").style.display = "none";
+    document.getElementById("f-left").textContent = "校园悬疑 · 46 段 · 4 个结局";
+    var done = endings().length;
+    document.getElementById("f-right").textContent = done ? ("已解锁结局 " + done + "/4") : "";
+
+    var stage = document.getElementById("stage");
+    stage.innerHTML =
+      '<div class="cover fade">' +
+        '<div class="sub">明德中学 · 三号楼 · 四层走廊</div>' +
+        '<h1>回声走廊</h1>' +
+        '<div class="rule"></div>' +
+        '<div class="blurb">在这栋楼里说一句话，声音要等两秒才回到耳朵里。<br>' +
+        '那两秒里，你还有机会改口。<br><br>' +
+        '一封信把你带到 2003 年 6 月 23 日的夜里。' +
+        '你可以带谁去，可以信谁，也可以什么都不带。</div>' +
+        '<div class="choices" style="margin-top:26px">' +
+          '<button class="opt" id="btn-new" type="button">走进三号楼</button>' +
+          (saved ? '<button class="opt" id="btn-cont" type="button">继续上一次（' + esc(saved.p) + '）</button>' : "") +
+        '</div>' +
+        '<div class="hintline">建议戴上耳机，关灯阅读 · 进度自动存档</div>' +
+      '</div>';
+
+    document.getElementById("btn-new").addEventListener("click", function(){
+      V = {};
+      document.getElementById("hud").style.display = "";
+      go(START);
+    });
+    if(saved){
+      document.getElementById("btn-cont").addEventListener("click", function(){
+        V = saved.v || {};
+        document.getElementById("hud").style.display = "";
+        go(saved.p);
+      });
+    }
+  }
+
+  document.getElementById("btn-restart").addEventListener("click", function(){
+    if(window.confirm("从序章重新开始？当前进度会被覆盖。")){
+      V = {};
+      passCurrentReset();
+      go(START);
+    }
+  });
+  function passCurrentReset(){ storeSet(SAVE_KEY, ""); }
+
+  /* 点空白也可以点按 */
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Enter" || e.key === " "){
+      var b = document.querySelector(".opt");
+      if(b){ e.preventDefault(); b.click(); }
+    }
+  });
+
+  showCover();
+})();
+</script>
+</body>
+</html>
