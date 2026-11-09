@@ -65,10 +65,31 @@
   }
   .prose p{margin:0 0 1.05em;text-align:justify;}
   .prose p:last-child{margin-bottom:0;}
+
+  /* ---------- 配图 ---------- */
+  .art{margin:0 0 20px;}
+  .art img{
+    width:100%;height:auto;display:block;border-radius:2px;
+    box-shadow:0 16px 38px rgba(0,0,0,.55);
+    filter:saturate(.9) contrast(1.03);
+  }
+  /* 横图：通栏，图片自己占一段 */
+  .art.wide{clear:none;margin:6px 0 24px;}
+  /* 竖图 / 方图：靠右浮动，正文绕排 */
+  .art.tall{float:right;width:44%;margin:4px 0 16px 22px;}
+  .art.square{float:right;width:34%;margin:4px 0 14px 20px;}
+  .art::after{content:"";display:block;clear:both;}
+  .cover-art{margin:0 0 26px;width:100%;}
+  .cover-art img{
+    width:100%;height:min(38vh,300px);object-fit:cover;object-position:50% 42%;
+    display:block;border-radius:2px;opacity:.92;
+    box-shadow:0 18px 44px rgba(0,0,0,.6);
+    filter:saturate(.85) contrast(1.05);
+  }
   .fade{animation:fadein .5s ease both;}
   @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 
-  .choices{margin-top:30px;display:flex;flex-direction:column;gap:12px;}
+  .choices{margin-top:30px;display:flex;flex-direction:column;gap:12px;clear:both;}
   .opt{
     display:block;width:100%;text-align:left;
     font-family:inherit;font-size:16px;line-height:1.75;
@@ -111,6 +132,9 @@
     .choices{gap:10px;margin-top:22px;}
     .cover{min-height:72vh;}
     .foot{margin-top:32px;}
+    /* 手机上不做浮动，全部满宽，避免文字被压成一字宽 */
+    .art.tall,.art.square{float:none;width:100%;margin:0 0 18px;}
+    .cover-art img{height:min(30vh,240px);}
   }
   html{-webkit-text-size-adjust:100%;}
   body{overflow-x:hidden;}
@@ -150,6 +174,9 @@
 (set: $v4 to false)
 (set: $v5 to false)
 
+@@IMG S01@@
+
+
 明德中学的三号楼，1978年落成。三层以下早就让位给了新的综合楼，只剩最上面那一层走廊还孤零零地悬着。玻璃上贴着红漆的“拆”字，漆被雨淋成褐色，像一道结痂的伤口。
 
 从一楼到四楼，每层十七级台阶，四段，六十八级。学生们管它叫回声走廊：在这头说一句话，声音会在走廊另一端迟到两秒才回来，像有人替你回答了半句。
@@ -160,6 +187,9 @@
 
 [[拆开信封-&gt;一封匿名信]]</tw-passagedata>
 <tw-passagedata pid="2" name="一封匿名信" tags="" position="240,100">信封是旧的，纸壳泛黄，邮戳是本校内部收发室的章。里面只有三行字，和一枚早已停用的校徽——2003年那一款，蓝底，银色麦穗。
+
+@@IMG D01@@
+
 
 “三号楼四层。晚十点。
 
@@ -173,6 +203,9 @@
 [[去暗房找陆行舟-&gt;暗房·陆行舟]]
 [[谁也不告诉，自己先去看一趟-&gt;独自·走廊初探]]</tw-passagedata>
 <tw-passagedata pid="3" name="档案室·江砚" tags="" position="380,100">江砚是《回声》的主编，高三，说话像在写审稿意见。
+
+@@IMG P01@@
+
 
 她把信看了三遍，把校徽翻过来对着台灯照，最后只给了两个字：“假的。”
 
@@ -188,6 +221,9 @@
 [[问她一句题外话-&gt;江砚的抽屉]]</tw-passagedata>
 <tw-passagedata pid="4" name="江砚的抽屉" tags="" position="520,100">2003年的合订本缺了第七期。
 
+@@IMG S06@@
+
+
 第七期是高考前最后一期，按惯例该有“毕业寄语”和“学生来稿”。目录还在，文章却整页被裁走了，切口很齐，是刀片划的。
 
 抽屉最里面压着一张纸，是2003年6月教务处的一份油印通知，字迹已模糊：“关于高二（1）班林漪同学……暂停……配合调查……”
@@ -201,6 +237,10 @@
 
 [[今晚十点，你会去吗-&gt;十点半·三号楼]]</tw-passagedata>
 <tw-passagedata pid="5" name="暗房·陆行舟" tags="" position="660,100">暗房的红灯把整个屋子染成一缸血。陆行舟正在显影，夹子夹着一张刚洗出来的照片。
+
+@@IMG P02@@
+@@IMG S07@@
+
 
 “来得正好。看看这个。”
 
@@ -217,6 +257,9 @@
 
 [[今晚十点，你去吗-&gt;十点半·三号楼]]</tw-passagedata>
 <tw-passagedata pid="6" name="独自·走廊初探" tags="" position="800,100">下午四点，三号楼的走廊空着。
+
+@@IMG S03@@
+
 
 你在东头站定，对着西边喊了一声：“有人吗。”
 
@@ -241,6 +284,9 @@
 [[回头，装作什么也没发现-&gt;老周的茶]]</tw-passagedata>
 <tw-passagedata pid="7" name="老周的茶" tags="" position="940,100">门卫室的老周在泡茶，六十五岁，2003年就在这所学校。
 
+@@IMG P03@@
+
+
 “叫得挺响。”他把茶杯推过来，“那楼里没有鬼。回声是活人弄出来的——管子、水泥、空腔，声音跑一圈再回来。”
 
 “可我听见的是……”
@@ -255,6 +301,9 @@
 [[今晚十点，你还会去吗-&gt;十点半·三号楼]]</tw-passagedata>
 <tw-passagedata pid="8" name="十点半·三号楼" tags="" position="1080,100">九点五十五。
 
+@@IMG S02@@
+
+
 (if: $jiang &gt;= 2)[
 江砚已经在铁门口等你，手里拎着两把手电和一叠复印的合订本。她不说“你怎么真来了”，只说：“跟上，别出声。”
 ](else-if: $lu &gt;= 2)[
@@ -267,6 +316,9 @@
 
 [[推门进去-&gt;回声·第一次]]</tw-passagedata>
 <tw-passagedata pid="9" name="回声·第一次" tags="" position="1220,100">四层。手电的光柱先照到灰尘，再照到墙。走廊东头的水泥地被擦得很亮，像有人每天都拖。
+
+@@IMG S04@@
+
 
 你们走到中段，脚步停下来的时候，回声还在走。
 
@@ -286,6 +338,9 @@
 [[站在原地，把手电重新按亮-&gt;夜巡人的灯]]
 [[退下楼梯，今晚到此为止-&gt;第一章收束]]</tw-passagedata>
 <tw-passagedata pid="10" name="夹层入口·门缝" tags="" position="1360,100">你缩进走廊东头的死角。
+
+@@IMG S05@@
+
 
 脚步声从你面前过去，带着一股樟脑和旧纸的味道，很慢，停在铁格栅前，蹲下，掀开格栅，下去了。
 
@@ -364,6 +419,9 @@
 ]</tw-passagedata>
 <tw-passagedata pid="15" name="校史柜" tags="" position="2060,100">校史室在校办楼三层。靠门一排铁皮柜，标签写着：1998—2005 校刊存档。
 
+@@IMG S09@@
+
+
 (if: $key)[
 417那把钥匙正好能开最下面一格的锁。你决定不去想这是不是巧合。
 ](else:)[
@@ -384,6 +442,9 @@
 [[读那篇文章-&gt;一页没有刊出的文章]]</tw-passagedata>
 <tw-passagedata pid="16" name="一页没有刊出的文章" tags="" position="2200,100">《回声》全文八百字。她写的是三号楼那条走廊：
 
+@@IMG D03@@
+
+
 “在这栋楼里，说话的人总要等两秒才听到自己的声音。我一直觉得那两秒很重要——那两秒里，你还有机会改口。”
 
 最后一段被红笔划掉了，旁边有一行批注，是陌生的硬笔字：“不宜刊发。建议作者先处理个人问题。”
@@ -394,6 +455,9 @@
 
 [[回午休-&gt;第二天·午休]]</tw-passagedata>
 <tw-passagedata pid="17" name="门卫室·请求" tags="" position="2340,100">老周把一串钥匙挂在钩子上，指着楼下：“地下室库房还有三十七箱旧书，是四层书房清出来的。学校要拆楼，我腿不行了，没人搬。”
+
+@@IMG S08@@
+
 
 “搬完怎么样？”
 
@@ -406,6 +470,9 @@
 
 [[卷起袖子，搬-&gt;搬书]]</tw-passagedata>
 <tw-passagedata pid="18" name="搬书" tags="" position="2480,100">三十七箱，两小时。你的校服后背湿透了，手上全是纸边划的口子。
+
+@@IMG S10@@
+
 
 最后一箱搬到一半，箱底掉出一本硬壳册子，封皮写着：2003年 学籍异动登记。
 
@@ -423,6 +490,10 @@
 [[回午休-&gt;第二天·午休]]</tw-passagedata>
 <tw-passagedata pid="19" name="心理室·苏昀" tags="" position="2620,100">苏昀是这学期新来的心理老师。办公室里有股樟脑丸的味道。
 
+@@IMG P06@@
+@@IMG S11@@
+
+
 你没打算说真话，但她先开了口：“你这两天睡不好。眼睛下面——”
 
 “老师，你信回声吗。”
@@ -438,6 +509,9 @@
 
 [[回午休-&gt;第二天·午休]]</tw-passagedata>
 <tw-passagedata pid="20" name="教务处·韩立" tags="" position="2760,100">韩立的办公室门上贴着“教务处（副主任）”。
+
+@@IMG S12@@
+
 
 他四十四岁，头发梳得整整齐齐，桌上摆着一份《三号楼拆除方案（终稿）》。
 
@@ -460,6 +534,9 @@
 [[出去-&gt;韩立的警告]]</tw-passagedata>
 <tw-passagedata pid="21" name="韩立的警告" tags="" position="2900,100">“沈聿。”
 
+@@IMG P04@@
+
+
 他在走廊里叫住你。声音不大，走廊很长，回声迟了两秒才把你的名字还回来。
 
 “我知道你在查什么。”他说，“二十年前有人查过，查到最后，什么都没查到。你猜为什么。因为查一件不存在的事，最好的结果就是什么也查不到。”
@@ -470,6 +547,9 @@
 
 [[回午休-&gt;第二天·午休]]</tw-passagedata>
 <tw-passagedata pid="22" name="郑老师的家" tags="" position="3040,100">城西，老小区。院子里晒着豆角和一台落灰的录音机。
+
+@@IMG S13@@
+
 
 郑文澜七十岁，退休物理老师，2003年高二（1）班班主任。她看见校徽的时候手抖了一下。
 
@@ -489,6 +569,9 @@
 
 [[问她一句：你为什么帮她-&gt;郑老师的回答]]</tw-passagedata>
 <tw-passagedata pid="23" name="郑老师的回答" tags="" position="3180,100">“因为我也是共犯。”
+
+@@IMG P05@@
+
 
 郑老师拉开抽屉，里面是一支钢笔，笔杆上刻着一个“漪”字。
 
@@ -515,6 +598,9 @@
 [[今晚十点，三号楼-&gt;夜·三号楼门口]]</tw-passagedata>
 <tw-passagedata pid="25" name="夜·三号楼门口" tags="" position="3460,100">九点五十。铁门上的锁换了。
 
+@@IMG D02@@
+
+
 (if: $key)[
 417那把钥匙插进去，转了半圈，锁开了。它本该是四层的钥匙，可它开的是这栋楼的过去。
 [[上四层-&gt;四层走廊]]
@@ -527,6 +613,9 @@
 [[上四层-&gt;四层走廊]]
 ]</tw-passagedata>
 <tw-passagedata pid="26" name="四层走廊" tags="" position="3600,100">四层。手电。灰尘。
+
+@@IMG C01@@
+
 
 你走到中段，停住，等。
 
@@ -543,6 +632,9 @@
 [[掀开铁格栅-&gt;夹层入口]]
 [[先站在这里，等它再来一次-&gt;十七级台阶上的人]]</tw-passagedata>
 <tw-passagedata pid="27" name="十七级台阶上的人" tags="" position="3740,100">你站着不动。
+
+@@IMG P07@@
+
 
 呼吸声慢慢变成脚步声，从东往西，一步，一步，停在第六十八级——那一级不存在的地方。
 
@@ -586,6 +678,9 @@
 [[往里走-&gt;夹层·霉味与纸]]</tw-passagedata>
 <tw-passagedata pid="30" name="夹层·霉味与纸" tags="" position="4160,100">夹层是一条和上面走廊等长的通道，宽不过两步。你往里走，脚下发出纸页被压碎的脆响。
 
+@@IMG S14@@
+
+
 走到中段，光柱照到一摞捆得整整齐齐的东西：十二本，一年一本，都是2003年那一期的校刊清样。
 
 最上面压着一个铁皮饼干盒。
@@ -596,6 +691,9 @@
 
 [[打开看-&gt;旧书库·磁带]]</tw-passagedata>
 <tw-passagedata pid="31" name="旧书库·磁带" tags="" position="4300,100">第一样：一支钢笔，笔杆上刻着“漪”。
+
+@@IMG D04@@
+
 
 第二样：一张复印室借出登记，2003年6月18日，借出人签名：韩立。
 
@@ -612,6 +710,9 @@
 
 [[再往深处走-&gt;木箱里的信]]</tw-passagedata>
 <tw-passagedata pid="32" name="木箱里的信" tags="" position="4440,100">夹层尽头，一个樟木箱。箱子上锁，锁眼里塞着粉笔头——和老周塞在铁门锁眼里的一样。
+
+@@IMG S15@@
+
 
 箱子里是信。橡皮筋捆着，没有收信人，也没有寄信人。
 
@@ -702,6 +803,9 @@
 [[接下来怎么办-&gt;抉择·三个方向]]</tw-passagedata>
 <tw-passagedata pid="37" name="抉择·三个方向" tags="" position="5140,100">磁带还在转轴上空转。
 
+@@IMG D05@@
+
+
 现在是十一点四十七分。三号楼下个月拆。你手上有一盘带子、一支笔、一张借出登记、一份销毁清单，还有一箱没有寄出的信。
 
 [[把带子交给江砚，明天头版-&gt;公开之前]]
@@ -740,6 +844,10 @@
 [[三点十七分-&gt;结局·夜里三点十七分]]</tw-passagedata>
 <tw-passagedata pid="42" name="结局·回声之外" tags="" position="5840,100">十一月十四日，《回声》出第七期。
 
+@@IMG E01@@
+@@IMG P08@@
+
+
 头版没有标题，只有一张走廊的照片，和一句话：回声是活人的延迟。
 
 同一天，江砚把录音带的副本送到区教育局，附上复印室借出登记、销毁清单和十二本校刊清样。
@@ -769,6 +877,9 @@
 [[关于本作-&gt;关于本作]]</tw-passagedata>
 <tw-passagedata pid="43" name="结局·走廊不再响" tags="" position="5980,100">你把带子交上去，写了一份情况说明放进校长信箱，然后回宿舍睡觉。那天晚上你睡得很好，好得有点不像话。
 
+@@IMG E02@@
+
+
 十一月，拆迁照常进行。三号楼像一截被抽掉的骨头，两天就塌了。夹层里的纸和水泥一起被压进卡车，运往城郊。
 
 录音带被“归档”。归档的意思是没有回执。
@@ -786,6 +897,9 @@
 [[关于本作-&gt;关于本作]]</tw-passagedata>
 <tw-passagedata pid="44" name="结局·合谋者" tags="" position="6120,100">你什么也没能证明。
 
+@@IMG E03@@
+
+
 韩立的动作比纸快。第二天，销毁清单的原件“不存在”；校刊的印刷经费卡在审批里；你在夹层里拍的照片，被鉴定为“光线不足，无法辨认”。
 
 一月，三号楼拆了。二月，你因为“擅自进入待拆建筑”被记过一次。班主任在班会上说：有些同学，编故事编得太投入。
@@ -798,6 +912,9 @@
 
 [[关于本作-&gt;关于本作]]</tw-passagedata>
 <tw-passagedata pid="45" name="结局·夜里三点十七分" tags="" position="6260,100">你留在了夹层。
+
+@@IMG E04@@
+
 
 不知道过了多久。手电电量掉到最后一格，光变成一团昏黄。
 
@@ -980,6 +1097,55 @@ Twine 用法：本作同时是 Twine 的故事存档。打开 Twine，选择“�
     return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   }
 
+  /* ---------- 配图登记表 ----------
+     编号 → [版式, 说明]。图片统一放 assets/<编号小写>.jpg；
+     文件不存在时 onerror 自动隐藏整块，不会出现裂图。 */
+  var ART = {
+    "C01": ["wide",   "四层走廊·主视觉"],
+    "P01": ["tall",   "江砚"],
+    "P02": ["tall",   "陆行舟"],
+    "P03": ["tall",   "周德海"],
+    "P04": ["tall",   "韩立"],
+    "P05": ["tall",   "郑文澜"],
+    "P06": ["tall",   "苏昀"],
+    "P07": ["wide",   "林漪的背影"],
+    "P08": ["tall",   "林知微"],
+    "S01": ["wide",   "三号楼外观"],
+    "S02": ["tall",   "十七级台阶"],
+    "S03": ["wide",   "四层走廊·白昼"],
+    "S04": ["wide",   "四层走廊·夜"],
+    "S05": ["wide",   "第六十八级台阶与铁格栅"],
+    "S06": ["wide",   "档案室"],
+    "S07": ["wide",   "暗房"],
+    "S08": ["wide",   "门卫室"],
+    "S09": ["wide",   "校史室铁皮柜"],
+    "S10": ["wide",   "地下室库房"],
+    "S11": ["wide",   "心理室"],
+    "S12": ["wide",   "教务处办公室"],
+    "S13": ["wide",   "城西小院"],
+    "S14": ["wide",   "夹层"],
+    "S15": ["wide",   "樟木箱"],
+    "D01": ["square", "匿名信与 2003 校徽"],
+    "D02": ["square", "417 铜钥匙"],
+    "D03": ["wide",   "2003 第七期清样"],
+    "D04": ["wide",   "录音机与磁带"],
+    "D05": ["wide",   "证据全景"],
+    "E01": ["wide",   "结局·回声之外"],
+    "E02": ["wide",   "结局·走廊不再响"],
+    "E03": ["wide",   "结局·合谋者"],
+    "E04": ["wide",   "结局·夜里三点十七分"]
+  };
+
+  function artHTML(code){
+    var meta = ART[code];
+    if(!meta) return "";
+    var file = "assets/" + code.toLowerCase() + ".jpg";
+    return '<figure class="art ' + meta[0] + '">' +
+           '<img src="' + file + '" alt="' + esc(meta[1]) + '" loading="lazy" ' +
+           'onerror="this.closest(\'figure\').style.display=\'none\'">' +
+           '</figure>';
+  }
+
   function render(text){
     var links = [];
     var tokenized = text.replace(/\[\[([^\]]*?)\]\]/g, function(m, inner){
@@ -1003,6 +1169,8 @@ Twine 用法：本作同时是 Twine 的故事存档。打开 Twine，选择“�
     var htmlOut = prose.split(/\n\s*\n/).map(function(par){
       par = par.replace(/^\s+|\s+$/g, "");
       if(!par) return "";
+      var mk = par.match(/^@@IMG\s+([A-Za-z0-9]+)@@$/);
+      if(mk) return artHTML(mk[1]);
       return "<p>" + esc(par).replace(/\n/g, "<br>") + "</p>";
     }).join("");
 
@@ -1082,6 +1250,8 @@ Twine 用法：本作同时是 Twine 的故事存档。打开 Twine，选择“�
     var stage = document.getElementById("stage");
     stage.innerHTML =
       '<div class="cover fade">' +
+        '<div class="cover-art"><img src="assets/cover.jpg" alt="三号楼" ' +
+          'onerror="this.parentNode.style.display=\'none\'"></div>' +
         '<div class="sub">明德中学 · 三号楼 · 四层走廊</div>' +
         '<h1>回声走廊</h1>' +
         '<div class="rule"></div>' +
