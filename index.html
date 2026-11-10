@@ -74,11 +74,17 @@
     filter:saturate(.9) contrast(1.03);
   }
   /* 横图：通栏，图片自己占一段 */
-  .art.wide{clear:none;margin:6px 0 24px;}
+  .art.wide{clear:both;margin:6px 0 24px;}
   /* 竖图 / 方图：靠右浮动，正文绕排 */
   .art.tall{float:right;width:44%;margin:4px 0 16px 22px;}
   .art.square{float:right;width:34%;margin:4px 0 14px 20px;}
   .art::after{content:"";display:block;clear:both;}
+  /* 同一段内连排的两张图：并排一行，竖图窄、横图宽，互不叠加 */
+  .art-pair{display:flex;gap:14px;align-items:center;clear:both;margin:6px 0 26px;}
+  .art-pair > figure{float:none;width:auto;margin:0;min-width:0;}
+  .art-pair > .art.tall{flex:0 0 40%;}
+  .art-pair > .art.wide,.art-pair > .art.square{flex:1 1 auto;}
+  .art-pair figure img{width:100%;}
   .cover-art{margin:0 0 26px;width:100%;}
   .cover-art img{
     width:100%;height:min(38vh,300px);object-fit:cover;object-position:50% 42%;
@@ -134,6 +140,9 @@
     .foot{margin-top:32px;}
     /* 手机上不做浮动，全部满宽，避免文字被压成一字宽 */
     .art.tall,.art.square{float:none;width:100%;margin:0 0 18px;}
+    .art-pair{display:block;gap:0;}
+    .art-pair > .art.tall{width:100%;}
+    .art-pair > figure{margin:0 0 18px;}
     .cover-art img{height:min(30vh,240px);}
   }
   html{-webkit-text-size-adjust:100%;}
@@ -1166,13 +1175,35 @@ Twine 用法：本作同时是 Twine 的故事存档。打开 Twine，选择“�
       else picked.push(links[parseInt(seg[k], 10)]);
     }
 
-    var htmlOut = prose.split(/\n\s*\n/).map(function(par){
-      par = par.replace(/^\s+|\s+$/g, "");
-      if(!par) return "";
+    /* 相邻两行的图片标记中间没有空行，先补空行，否则会被当成正文原样显示 */
+    prose = prose.replace(/(@@IMG[^@\n]*@@)[ \t]*\r?\n(?=[ \t]*@@IMG)/g, "$1\n\n");
+
+    var blocks = prose.split(/\n\s*\n/);
+    var htmlOut = "", bi = 0;
+    function imgCode(par){
       var mk = par.match(/^@@IMG\s+([A-Za-z0-9]+)@@$/);
-      if(mk) return artHTML(mk[1]);
-      return "<p>" + esc(par).replace(/\n/g, "<br>") + "</p>";
-    }).join("");
+      return mk ? mk[1] : null;
+    }
+    while(bi < blocks.length){
+      var par = blocks[bi].replace(/^\s+|\s+$/g, "");
+      if(!par){ bi++; continue; }
+      var code = imgCode(par);
+      if(code){
+        /* 连续多张图并成一组，避免浮动图与后一张横图叠在一起 */
+        var run = [];
+        while(bi < blocks.length){
+          var c2 = imgCode(blocks[bi].replace(/^\s+|\s+$/g, ""));
+          if(!c2) break;
+          run.push(c2); bi++;
+        }
+        htmlOut += run.length > 1
+          ? '<div class="art-pair">' + run.map(artHTML).join("") + '</div>'
+          : artHTML(run[0]);
+        continue;
+      }
+      htmlOut += "<p>" + esc(par).replace(/\n/g, "<br>") + "</p>";
+      bi++;
+    }
 
     return {html: htmlOut, choices: picked};
   }
